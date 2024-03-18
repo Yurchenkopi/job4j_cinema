@@ -38,7 +38,14 @@ public class SimpleFilmSessionService implements FilmSessionService {
     public Collection<FilmSessionDto> findAll() {
         return filmSessionRepository.findAll().stream()
                 .map(this::filmSessionToDto)
-                .collect(Collectors.toList());
+                .toList();
+    }
+
+    @Override
+    public Collection<FilmSessionDto> findAllByHalls(int hallId) {
+        return filmSessionRepository.findAllByHalls(hallId).stream()
+                .map(this::filmSessionToDto)
+                .toList();
     }
 
     private FilmSessionDto filmSessionToDto(FilmSession filmSession) {

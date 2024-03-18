@@ -9,4 +9,6 @@ public interface FilmSessionRepository {
     FilmSession findById(int id);
 
     Collection<FilmSession> findAll();
+
+    Collection<FilmSession> findAllByHalls(int hallId);
 }

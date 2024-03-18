@@ -23,7 +23,7 @@ public class HallController {
         return "halls/list";
     }
 
-    @GetMapping("/id")
+    @GetMapping("/{id}")
     public String getById(Model model, @PathVariable int id) {
         model.addAttribute("hall", hallService.findById(id));
         return "halls/one";
