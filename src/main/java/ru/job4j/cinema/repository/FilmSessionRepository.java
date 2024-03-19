@@ -10,5 +10,7 @@ public interface FilmSessionRepository {
 
     Collection<FilmSession> findAll();
 
-    Collection<FilmSession> findAllByHalls(int hallId);
+    Collection<FilmSession> findByHalls(int hallId);
+
+    Collection<FilmSession> findByFilms(int filmId);
 }

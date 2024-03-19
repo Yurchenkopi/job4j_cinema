@@ -10,6 +10,7 @@ public interface FilmSessionService {
 
     Collection<FilmSessionDto> findAll();
 
-    Collection<FilmSessionDto> findAllByHalls(int hallId);
+    Collection<FilmSessionDto> findByHalls(int hallId);
 
+    Collection<FilmSessionDto> findByFilms(int filmId);
 }

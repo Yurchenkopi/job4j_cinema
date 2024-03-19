@@ -35,8 +35,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                <div class="container">
-                <tr th:each="hall: ${halls}" th:href="@{/filmSessions/{hallId}(hallId=${hall.id})}" style="cursor: pointer;">
+                <tr th:each="hall: ${halls}" th:href="@{/filmSessions/halls/{hallId}(hallId=${hall.id})}" style="cursor: pointer;">
                     <td th:text="${hall.id}"></td>
                     <td th:text="${hall.name}"></td>
                     <td th:text="${hall.rowCount}"></td>

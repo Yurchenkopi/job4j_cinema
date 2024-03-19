@@ -8,7 +8,6 @@ import ru.job4j.cinema.repository.FilmSessionRepository;
 import ru.job4j.cinema.repository.HallRepository;
 
 import java.util.Collection;
-import java.util.stream.Collectors;
 
 @Service
 public class SimpleFilmSessionService implements FilmSessionService {
@@ -42,8 +41,15 @@ public class SimpleFilmSessionService implements FilmSessionService {
     }
 
     @Override
-    public Collection<FilmSessionDto> findAllByHalls(int hallId) {
-        return filmSessionRepository.findAllByHalls(hallId).stream()
+    public Collection<FilmSessionDto> findByHalls(int hallId) {
+        return filmSessionRepository.findByHalls(hallId).stream()
+                .map(this::filmSessionToDto)
+                .toList();
+    }
+
+    @Override
+    public Collection<FilmSessionDto> findByFilms(int filmId) {
+        return filmSessionRepository.findByFilms(filmId).stream()
                 .map(this::filmSessionToDto)
                 .toList();
     }

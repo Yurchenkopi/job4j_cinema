@@ -18,13 +18,13 @@
     <header th:insert="blocks/header :: header"></header>
     <div class="container">
         <div class="row">
-            <h3 th:text="${filmSessions[0].hallName} + ' зал'" class="text-center"></h3>
+            <h3 th:text="${filmSessions[0].filmName}" class="text-center"></h3>
         </div>
         <div class="row">
             <table class="table">
                 <thead>
                 <tr>
-                    <th scope="col">Название фильма</th>
+                    <th scope="col">Название зала</th>
                     <th scope="col">Время начала сеанса</th>
                     <th scope="col">Время завершения сеанса</th>
                     <th scope="col">Стоимость билета</th>
@@ -32,7 +32,7 @@
                 </thead>
                 <tbody>
                 <tr th:each="filmSession: ${filmSessions}">
-                    <td><a th:text="${filmSession.filmName}"></a></td>
+                    <td><a th:text="${filmSession.hallName}"></a></td>
                     <td><a th:text="${#temporals.format(filmSession.startTime, 'HH:mm')}"></a></td>
                     <td><a th:text="${#temporals.format(filmSession.endTime, 'HH:mm')}"></a></td>
                     <td><a th:text="${filmSession.price}"></a></td>

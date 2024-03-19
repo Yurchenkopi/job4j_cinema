@@ -32,7 +32,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:each="film: ${films}">
+                <tr th:each="film: ${films}" th:href="@{/filmSessions/films/{filmId}(filmId=${film.id})}" style="cursor: pointer;">
                     <td th:text="${film.id}" />
                     <td th:text="${film.name}"/>
                     <td th:text="${film.description}"/>
