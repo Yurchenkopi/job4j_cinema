@@ -12,13 +12,19 @@
     <script th:src="@{/js/bootstrap.min.js}"></script>
 
     <title>Онлайн сервис покупки билетов</title>
+
+    <style>
+        .table-hover tbody tr:hover {
+            background-color: #bee5eb;
+        }
+    </style>
 </head>
 <body>
 <div class="container-fluid p-0">
     <header th:insert="blocks/header :: header"></header>
     <div class="container">
         <div class="row">
-            <table class="table">
+            <table class="table table-hover">
                 <thead>
                 <tr>
                     <th scope="col">#</th>
@@ -29,12 +35,13 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:each="hall: ${halls}">
-                    <td><a th:text="${hall.id}" th:href="@{/filmSessions/{hallId}(hallId=${hall.id})}"></a></td>
-                    <td><a th:text="${hall.name}" th:href="@{/filmSessions/{hallId}(hallId=${hall.id})}"></a></td>
-                    <td><a th:text="${hall.rowCount}" th:href="@{/filmSessions/{hallId}(hallId=${hall.id})}"></a></td>
-                    <td><a th:text="${hall.placeCount}" th:href="@{/filmSessions/{hallId}(hallId=${hall.id})}"></a></td>
-                    <td><a th:text="${hall.description}" th:href="@{/filmSessions/{hallId}(hallId=${hall.id})}"></a></td>
+                <div class="container">
+                <tr th:each="hall: ${halls}" th:href="@{/filmSessions/{hallId}(hallId=${hall.id})}" style="cursor: pointer;">
+                    <td th:text="${hall.id}"></td>
+                    <td th:text="${hall.name}"></td>
+                    <td th:text="${hall.rowCount}"></td>
+                    <td th:text="${hall.placeCount}"></td>
+                    <td th:text="${hall.description}"></td>
                 </tr>
                 </tbody>
             </table>
@@ -42,5 +49,18 @@
     </div>
     <footer th:insert="blocks/footer :: footer"></footer>
 </div>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var rows = document.querySelectorAll("tbody tr");
+        rows.forEach(function(row) {
+            row.addEventListener("click", function() {
+                var href = row.getAttribute("href");
+                if (href) {
+                    window.location.href = href;
+                }
+            });
+        });
+    });
+</script>
 </body>
 </html>
