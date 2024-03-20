@@ -57,14 +57,17 @@ public class SimpleFilmSessionService implements FilmSessionService {
     private FilmSessionDto filmSessionToDto(FilmSession filmSession) {
         int filmSessionId = filmSession.getId();
         var filmName = filmRepository.findById(filmSession.getFilmId()).getName();
-        var hallName = hallRepository.findById(filmSession.getHallId()).getName();
+        var hall = hallRepository.findById(filmSession.getHallId());
         return new FilmSessionDto(
                 filmSessionId,
                 filmName,
-                hallName,
+                filmSession.getFilmId(),
+                hall.getName(),
                 filmSession.getStartTime(),
                 filmSession.getEndTime(),
-                filmSession.getPrice()
+                filmSession.getPrice(),
+                hall.getRowCount(),
+                hall.getPlaceCount()
         );
     }
 }

@@ -12,6 +12,12 @@
     <script th:src="@{/js/bootstrap.min.js}"></script>
 
     <title>Онлайн сервис покупки билетов</title>
+
+    <style>
+        .table-hover tbody tr:hover {
+            background-color: #bee5eb;
+        }
+    </style>
 </head>
 <body>
 <div class="container-fluid p-0">
@@ -21,7 +27,7 @@
             <h3 th:text="${filmSessions[0].filmName}" class="text-center"></h3>
         </div>
         <div class="row">
-            <table class="table">
+            <table class="table table-hover">
                 <thead>
                 <tr>
                     <th scope="col">Название зала</th>
@@ -31,7 +37,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:each="filmSession: ${filmSessions}">
+                <tr th:each="filmSession: ${filmSessions}" th:href="@{/filmSessions/{sessionId}(sessionId=${filmSession.Id})}" style="cursor: pointer;">
                     <td><a th:text="${filmSession.hallName}"></a></td>
                     <td><a th:text="${#temporals.format(filmSession.startTime, 'HH:mm')}"></a></td>
                     <td><a th:text="${#temporals.format(filmSession.endTime, 'HH:mm')}"></a></td>
@@ -43,5 +49,18 @@
     </div>
     <footer th:insert="blocks/footer :: footer"></footer>
 </div>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var rows = document.querySelectorAll("tbody tr");
+        rows.forEach(function(row) {
+            row.addEventListener("click", function() {
+                var href = row.getAttribute("href");
+                if (href) {
+                    window.location.href = href;
+                }
+            });
+        });
+    });
+</script>
 </body>
 </html>

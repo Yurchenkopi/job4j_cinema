@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import ru.job4j.cinema.service.FilmSessionService;
 
+import java.util.List;
+
 @Controller
 @RequestMapping("/filmSessions")
 public class FilmSessionController {
@@ -27,5 +29,15 @@ public class FilmSessionController {
     public String getByFilms(Model model, @PathVariable int id) {
         model.addAttribute("filmSessions", filmSessionService.findByFilms(id));
         return "filmSessions/byFilms";
+    }
+
+    @GetMapping("/{sessionId}")
+    public String buyTicket(Model model, @PathVariable int sessionId) {
+        var listOfRowPlaces = filmSessionService.findById(sessionId).getRowNums();
+        var listOfPlaces = filmSessionService.findById(sessionId).getPlaceNums();
+        model.addAttribute("rowNums", listOfRowPlaces);
+        model.addAttribute("placeNums", listOfPlaces);
+        model.addAttribute("filmSession", filmSessionService.findById(sessionId));
+        return "ticket/buy.html";
     }
 }
