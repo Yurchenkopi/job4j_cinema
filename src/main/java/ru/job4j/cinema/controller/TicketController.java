@@ -7,6 +7,7 @@ import ru.job4j.cinema.model.Ticket;
 import ru.job4j.cinema.service.FilmSessionService;
 import ru.job4j.cinema.service.TicketService;
 
+import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -25,7 +26,7 @@ public class TicketController {
     }
 
     @PostMapping("/buy")
-    public String buyTicket(@ModelAttribute Ticket ticket, Model model) {
+    public String buyTicket(@ModelAttribute Ticket ticket, Model model, HttpSession session) {
         try {
             ticketService.buy(ticket);
             return "redirect:/films";
