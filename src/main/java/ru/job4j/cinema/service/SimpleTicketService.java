@@ -20,7 +20,7 @@ public class SimpleTicketService implements TicketService {
 
     @Override
     public Optional<Ticket> buy(Ticket ticket) {
-        return Optional.empty();
+        return ticketRepository.buy(ticket);
     }
 
     @Override
