@@ -23,8 +23,11 @@
 <div class="container-fluid p-0">
     <header th:insert="blocks/header :: header"></header>
     <div class="container">
-        <form class="mt-3" th:action="@{/ticket/buy}" method="post">
+        <form class="mt-3" th:action="@{/tickets/buy}" method="post">
             <input type="hidden" name="sessionId" th:value="${filmSession.id}">
+            <div th:if="${user != null && user.fullName != 'Гость'}">
+                <input type="hidden" name="userId" th:value="${user.id}">
+            </div>
             <div class="row mb-3">
                 <div class="col-3">
                     <div class="mb-3">
@@ -72,7 +75,7 @@
                         </select>
                     </div>
                     <div class="row">
-                        <div class="col-6"><a class="btn btn-danger w-100" th:href="@{/filmSessions}">Отмена</a></div>
+                        <div class="col-6"><a class="btn btn-danger w-100" th:href="@{/index}">Отмена</a></div>
                         <div class="col-6"><button class="btn btn-success w-100" type="submit">Купить</button></div>
                     </div>
                 </div>

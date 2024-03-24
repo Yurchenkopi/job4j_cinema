@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 import org.sql2o.Sql2o;
 import ru.job4j.cinema.model.Ticket;
 
+import java.util.Collection;
 import java.util.Optional;
 
 @Repository
@@ -20,8 +21,8 @@ public class Sql2oTicketRepository implements TicketRepository {
     }
 
     @Override
-    public Optional<Ticket> buy(Ticket ticket) {
-        Optional<Ticket> rsl = Optional.empty();
+    public Optional<Ticket> buy(Ticket ticket) throws Exception {
+        Optional<Ticket> rsl;
         try (var connection = sql2o.open()) {
             var sql = """
                     INSERT INTO tickets (session_id, row_number, place_number, user_id)
@@ -38,8 +39,35 @@ public class Sql2oTicketRepository implements TicketRepository {
             rsl = Optional.of(ticket);
         } catch (Exception e) {
             LOG.error("Выбранное место уже занято.", e);
+            throw new Exception("Не удалось купить билет. Место уже занято.");
         }
         return rsl;
+    }
+
+    @Override
+    public Ticket getById(int id) {
+        try (var connection = sql2o.open()) {
+            var sql = """
+                    SELECT * FROM tickets
+                    WHERE id = :id;
+                    """;
+            var query = connection.createQuery(sql);
+            query.addParameter("id", id);
+            return query.setColumnMappings(Ticket.COLUMN_MAPPING).executeAndFetchFirst(Ticket.class);
+        }
+    }
+
+    @Override
+    public Collection<Ticket> findByUser(int userId) {
+        try (var connection = sql2o.open()) {
+            var sql = """
+                    SELECT * FROM tickets
+                    WHERE user_id = :userId;
+                    """;
+            var query = connection.createQuery(sql);
+            query.addParameter("userId", userId);
+            return query.setColumnMappings(Ticket.COLUMN_MAPPING).executeAndFetch(Ticket.class);
+        }
     }
 
     @Override

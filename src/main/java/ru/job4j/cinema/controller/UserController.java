@@ -23,23 +23,23 @@ public class UserController {
     }
 
     @GetMapping("/register")
-    public String getRegistrationPage(Model model, HttpSession session) {
+    public String getRegistrationPage() {
         return "users/register";
     }
 
     @GetMapping("/login")
-    public String getLoginPage(Model model, HttpSession session) {
+    public String getLoginPage() {
         return "users/login";
     }
 
     @PostMapping("/register")
-    public String register(@ModelAttribute User user, Model model) {
+    public String register(@ModelAttribute User user, Model model, HttpServletRequest request) {
         var newUser = userService.save(user);
         if (newUser.isEmpty()) {
             model.addAttribute("message", "Пользователь с таким email уже зарегистрирован");
             return "errors/404";
         }
-        return "redirect:/films";
+        return loginUser(user, model, request);
     }
 
     @GetMapping("/logout")

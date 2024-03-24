@@ -7,29 +7,51 @@ import ru.job4j.cinema.model.Ticket;
 import ru.job4j.cinema.service.FilmSessionService;
 import ru.job4j.cinema.service.TicketService;
 
-import javax.servlet.http.HttpSession;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 @Controller
-@RequestMapping("/ticket")
+@RequestMapping("/tickets")
 public class TicketController {
 
     private final TicketService ticketService;
 
-    private final FilmSessionService filmSessionService;
-
-    public TicketController(TicketService ticketService, FilmSessionService filmSessionService) {
+    public TicketController(TicketService ticketService) {
         this.ticketService = ticketService;
-        this.filmSessionService = filmSessionService;
+    }
+
+    @GetMapping("/users/{userid}")
+    public String getByUsers(Model model, @PathVariable int userid) {
+        model.addAttribute("tickets", ticketService.findByUser(userid));
+        return "tickets/byUsers";
+    }
+
+    @GetMapping("/{ticketId}")
+    public String getById(Model model, @PathVariable int ticketId) {
+        model.addAttribute("ticket", ticketService.findById(ticketId));
+        return "tickets/one";
     }
 
     @PostMapping("/buy")
-    public String buyTicket(@ModelAttribute Ticket ticket, Model model, HttpSession session) {
+    public String buyTicket(@ModelAttribute Ticket ticket, Model model) {
         try {
             ticketService.buy(ticket);
-            return "redirect:/films";
+            var message = String.format(
+                    "Поздравляем!%sВы приобрели билет на ряд-%d, место-%d.",
+                    System.lineSeparator(),
+                    ticket.getRowNumber(), ticket.getPlaceNumber()
+            );
+            model.addAttribute("message", message);
+            return "messages/message";
+        } catch (Exception exception) {
+            model.addAttribute("message", exception.getMessage());
+            return "errors/404";
+        }
+    }
+
+    @PostMapping("refund")
+    public String refund(@ModelAttribute Ticket ticket, Model model) {
+        try {
+            ticketService.refund(ticket);
+            model.addAttribute("message", "Ожидайте возврат денежных средств.");
+            return "messages/message";
         } catch (Exception exception) {
             model.addAttribute("message", exception.getMessage());
             return "errors/404";

@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link th:href = "@{/css/bootstrap.min.css}" rel="stylesheet">
+    <script th:src="@{/umd/popper.min.js}"></script>
+    <script th:src="@{/js/bootstrap.min.js}"></script>
+
+    <title>Уведомление</title>
+</head>
+<body>
+<div class="container-fluid p-0">
+    <header th:insert="blocks/header :: header"></header>
+    <div class="container">
+        <h3 class="mt-3">Уведомление</h3>
+        <h3 class="text-success" th:text="${message}"></h3>
+        <p>Произойдет автоматический переход в кинотеку через <span id="countdown"></span> сек...</p>
+    </div>
+    <footer th:insert="blocks/footer :: footer"></footer>
+</div>
+<script>
+    var seconds = 10;
+    var countdown = setInterval(function() {
+        seconds--;
+        document.getElementById('countdown').innerText = seconds;
+        if (seconds <= 0) {
+            clearInterval(countdown);
+            window.location.href = '/films';
+        }
+    }, 1000);
+</script>
+</body>
+</html>

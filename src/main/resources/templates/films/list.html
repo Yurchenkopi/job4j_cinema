@@ -6,62 +6,90 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.2/font/bootstrap-icons.css">
     <link th:href = "@{/css/bootstrap.min.css}" rel="stylesheet">
     <script th:src="@{/umd/popper.min.js}"></script>
     <script th:src="@{/js/bootstrap.min.js}"></script>
 
     <title>Онлайн сервис покупки билетов</title>
+
+    <style>
+        .film-item:hover {
+            background-color: #bee5eb;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
 <div class="container-fluid p-0">
     <header th:insert="blocks/header :: header"></header>
     <div class="container">
-        <div class="row">
-            <table class="table table-hover">
-                <thead>
-                <tr>
-                    <th scope="col">#</th>
-                    <th scope="col">Название</th>
-                    <th scope="col">Описание</th>
-                    <th scope="col">Год</th>
-                    <th scope="col">Жанр</th>
-                    <th scope="col">Возрастное ограничение</th>
-                    <th scope="col">Продолжительность, мин.</th>
-                    <th scope="col">Постер</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:each="film: ${films}" th:href="@{/filmSessions/films/{filmId}(filmId=${film.id})}" style="cursor: pointer;">
-                    <td th:text="${film.id}" />
-                    <td th:text="${film.name}"/>
-                    <td th:text="${film.description}"/>
-                    <td th:text="${film.year}" />
-                    <td th:text="${film.genre}" />
-                    <td th:text="${film.minimalAge}"/>
-                    <td th:text="${film.durationInMinutes}"/>
-                    <td>
-                        <img th:src="@{/files/{filmId}(filmId = ${film.fileId})}">
-                    </td>
-                </tr>
-                </tbody>
-            </table>
+        <div class="row mt-2 film-item" th:each="film: ${films}" th:attr="data-href=@{/filmSessions/films/{filmId}(filmId=${film.id})}" onclick="redirectToFilm(this)" style="cursor: pointer;">
+            <div class="col-3">
+                <div class="mt-0">
+                    <img th:src="@{/files/{fileId}(fileId=*{film.fileId})}" class="w-100" alt="No image">
+                </div>
+            </div>
+            <div class="col-9">
+                <div class="row mt-3">
+                    <div class="col-6">
+                        <h6 style="text-align: left;" th:text="'Название: '"></h6>
+                    </div>
+                    <div class="col-6">
+                        <h6 style="text-align: center;" th:text="${film.name}"></h6>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6">
+                        <h6 style="text-align: left;" th:text="'Год: '"></h6>
+                    </div>
+                    <div class="col-6">
+                        <h6 style="text-align: center;" th:text="${film.year}"></h6>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6">
+                        <h6 style="text-align: left;" th:text="'Жанр: '"></h6>
+                    </div>
+                    <div class="col-6">
+                        <h6 style="text-align: center;" th:text="${film.genre}"></h6>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6">
+                        <h6 style="text-align: left;" th:text="'Возрастное ограничение: '"></h6>
+                    </div>
+                    <div class="col-6">
+                        <h6 style="text-align: center;" th:text="${film.minimalAge}"></h6>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6">
+                        <h6 style="text-align: left;" th:text="'Продолжительность, мин.: '"></h6>
+                    </div>
+                    <div class="col-6">
+                        <h6 style="text-align: center;" th:text="${film.durationInMinutes}"></h6>
+                    </div>
+                </div>
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <h6 style="text-align: left;" th:text="'Описание: '"></h6>
+                    </div>
+                    <div class="col-12">
+                        <h6 style="text-align: justify;" th:text="${film.description}"></h6>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     <footer th:insert="blocks/footer :: footer"></footer>
 </div>
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        var rows = document.querySelectorAll("tbody tr");
-        rows.forEach(function(row) {
-            row.addEventListener("click", function() {
-                var href = row.getAttribute("href");
-                if (href) {
-                    window.location.href = href;
-                }
-            });
-        });
-    });
+    function redirectToFilm(element) {
+        var href = element.getAttribute("data-href");
+        if (href) {
+            window.location.href = href;
+        }
+    }
 </script>
 </body>
 </html>

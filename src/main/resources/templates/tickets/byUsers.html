@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
 
-    <!--  Зависимости Bootstrap-->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -10,7 +9,9 @@
     <link th:href = "@{/css/bootstrap.min.css}" rel="stylesheet">
     <script th:src="@{/umd/popper.min.js}"></script>
     <script th:src="@{/js/bootstrap.min.js}"></script>
+
     <title>Онлайн сервис покупки билетов</title>
+
     <style>
         .table-hover tbody tr:hover {
             background-color: #bee5eb;
@@ -25,20 +26,18 @@
             <table class="table table-hover">
                 <thead>
                 <tr>
-                    <th scope="col">#</th>
-                    <th scope="col">Название</th>
-                    <th scope="col">Количество рядов</th>
-                    <th scope="col">Количество мест</th>
-                    <th scope="col">Описание</th>
+                    <th scope="col">Зал</th>
+                    <th scope="col">Фильм</th>
+                    <th scope="col">Ряд</th>
+                    <th scope="col">Место</th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:each="hall: ${halls}" th:href="@{/filmSessions/halls/{hallId}(hallId=${hall.id})}" style="cursor: pointer;">
-                    <td th:text="${hall.id}"></td>
-                    <td th:text="${hall.name}"></td>
-                    <td th:text="${hall.rowCount}"></td>
-                    <td th:text="${hall.placeCount}"></td>
-                    <td th:text="${hall.description}"></td>
+                <tr th:each="ticket: ${tickets}" th:href="@{/tickets/{ticketId}(ticketId=${ticket.Id})}" style="cursor: pointer;">
+                    <td><a th:text="${ticket.hallName}"></a></td>
+                    <td><a th:text="${ticket.filmName}"></a></td>
+                    <td><a th:text="${ticket.rowNumber}"></a></td>
+                    <td><a th:text="${ticket.placeNumber}"></a></td>
                 </tr>
                 </tbody>
             </table>

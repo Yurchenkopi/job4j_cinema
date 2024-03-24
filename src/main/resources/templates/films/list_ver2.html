@@ -10,35 +10,42 @@
     <link th:href = "@{/css/bootstrap.min.css}" rel="stylesheet">
     <script th:src="@{/umd/popper.min.js}"></script>
     <script th:src="@{/js/bootstrap.min.js}"></script>
+
     <title>Онлайн сервис покупки билетов</title>
-    <style>
-        .table-hover tbody tr:hover {
-            background-color: #bee5eb;
-        }
-    </style>
 </head>
 <body>
 <div class="container-fluid p-0">
     <header th:insert="blocks/header :: header"></header>
     <div class="container">
         <div class="row">
+            <div class="mb-3" th:if="${message}">
+                <p class="text-danger" th:text="${message}"></p>
+            </div>
             <table class="table table-hover">
                 <thead>
                 <tr>
                     <th scope="col">#</th>
                     <th scope="col">Название</th>
-                    <th scope="col">Количество рядов</th>
-                    <th scope="col">Количество мест</th>
                     <th scope="col">Описание</th>
+                    <th scope="col">Год</th>
+                    <th scope="col">Жанр</th>
+                    <th scope="col">Возрастное ограничение</th>
+                    <th scope="col">Продолжительность, мин.</th>
+                    <th scope="col">Постер</th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:each="hall: ${halls}" th:href="@{/filmSessions/halls/{hallId}(hallId=${hall.id})}" style="cursor: pointer;">
-                    <td th:text="${hall.id}"></td>
-                    <td th:text="${hall.name}"></td>
-                    <td th:text="${hall.rowCount}"></td>
-                    <td th:text="${hall.placeCount}"></td>
-                    <td th:text="${hall.description}"></td>
+                <tr th:each="film: ${films}" th:href="@{/filmSessions/films/{filmId}(filmId=${film.id})}" style="cursor: pointer;">
+                    <td th:text="${film.id}" />
+                    <td th:text="${film.name}"/>
+                    <td th:text="${film.description}"/>
+                    <td th:text="${film.year}" />
+                    <td th:text="${film.genre}" />
+                    <td th:text="${film.minimalAge}"/>
+                    <td th:text="${film.durationInMinutes}"/>
+                    <td>
+                        <img th:src="@{/files/{filmId}(filmId = ${film.fileId})}">
+                    </td>
                 </tr>
                 </tbody>
             </table>

@@ -7,8 +7,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import ru.job4j.cinema.service.HallService;
 
-import javax.servlet.http.HttpSession;
-
 @Controller
 @RequestMapping("/halls")
 public class HallController {
@@ -20,13 +18,13 @@ public class HallController {
     }
 
     @GetMapping
-    public String getAll(Model model, HttpSession session) {
+    public String getAll(Model model) {
         model.addAttribute("halls", hallService.findAll());
         return "halls/list";
     }
 
     @GetMapping("/{id}")
-    public String getById(Model model, @PathVariable int id, HttpSession session) {
+    public String getById(Model model, @PathVariable int id) {
         model.addAttribute("hall", hallService.findById(id));
         return "halls/one";
     }
