@@ -79,7 +79,8 @@ public class Sql2oTicketRepository implements TicketRepository {
                     """;
             var query = connection.createQuery(sql);
             query.addParameter("id", ticket.getId());
-            return query.executeUpdate().getResult() > 0;
+            var affectedRows = query.executeUpdate().getResult();
+            return affectedRows > 0;
         }
     }
 }

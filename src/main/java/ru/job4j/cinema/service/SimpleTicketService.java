@@ -53,7 +53,7 @@ public class SimpleTicketService implements TicketService {
 
     @Override
     public boolean refund(Ticket ticket) {
-        return false;
+        return ticketRepository.refund(ticket);
     }
 
     private TicketDto ticketToDto(Ticket ticket) {
