@@ -50,6 +50,22 @@
                     </div>
                     <div class="row">
                         <div class="col-6">
+                            <h3 style="text-align: left;" th:text="'Время начала сеанса: '"></h3>
+                        </div>
+                        <div class="col-6">
+                            <h3 style="text-align: center;" th:text="${#temporals.format(ticket.startTime, 'HH:mm')}"></h3>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6">
+                            <h3 style="text-align: left;" th:text="'Время окончания сеанса: '"></h3>
+                        </div>
+                        <div class="col-6">
+                            <h3 style="text-align: center;" th:text="${#temporals.format(ticket.endTime, 'HH:mm')}"></h3>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6">
                             <h3 style="text-align: left;" th:text="'Номер ряда: '"></h3>
                         </div>
                         <div class="col-6">

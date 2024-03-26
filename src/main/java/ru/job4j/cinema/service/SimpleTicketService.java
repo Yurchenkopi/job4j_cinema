@@ -66,6 +66,8 @@ public class SimpleTicketService implements TicketService {
                 film.getName(),
                 film.getFileId(),
                 hall.getName(),
+                session.getStartTime(),
+                session.getEndTime(),
                 ticket.getRowNumber(),
                 ticket.getPlaceNumber()
         );

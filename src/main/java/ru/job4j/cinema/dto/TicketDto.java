@@ -1,5 +1,7 @@
 package ru.job4j.cinema.dto;
 
+import java.time.LocalDateTime;
+
 public class TicketDto {
 
     private int id;
@@ -10,15 +12,25 @@ public class TicketDto {
 
     private String hallName;
 
+    private LocalDateTime startTime;
+
+    private LocalDateTime endTime;
+
     private int rowNumber;
 
     private int placeNumber;
 
-    public TicketDto(int id, String filmName, int fileId, String hallName, int rowNumber, int placeNumber) {
+    public TicketDto(
+            int id, String filmName, int fileId,
+            String hallName, LocalDateTime startTime,
+            LocalDateTime endTime, int rowNumber, int placeNumber
+    ) {
         this.id = id;
         this.filmName = filmName;
         this.fileId = fileId;
         this.hallName = hallName;
+        this.startTime = startTime;
+        this.endTime = endTime;
         this.rowNumber = rowNumber;
         this.placeNumber = placeNumber;
     }
@@ -53,6 +65,22 @@ public class TicketDto {
 
     public void setHallName(String hallName) {
         this.hallName = hallName;
+    }
+
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public LocalDateTime getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
     }
 
     public int getRowNumber() {
