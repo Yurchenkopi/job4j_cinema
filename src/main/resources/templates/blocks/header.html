@@ -8,15 +8,15 @@
                     <a class="nav-item nav-link" th:href="@{/halls}">Расписание</a>
                     <a class="nav-item nav-link" th:href="@{/films}">Кинотека</a>
                 </div>
-                <div class="navbar-nav me-auto" th:if="${user == null || user.fullName == 'Гость' || user.id == 0}">
+                <div class="navbar-nav" th:if="${user == null || user.fullName == 'Гость' || user.id == 0}">
                     <a class="nav-item nav-link" th:href="@{/users/register}">Регистрация</a>
                     <a class="nav-item nav-link" th:href="@{/users/login}">Войти</a>
                 </div>
-                <div class="navbar-nav me-auto" th:if="${user != null && user.fullName != 'Гость' && user.id != 0}">
+                <div class="navbar-nav" th:if="${user != null && user.fullName != 'Гость' && user.id != 0}">
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false" th:text="${user.fullName}"></a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                            <li><a class="dropdown-item" href="#">Личные данные</a></li>
+                            <li><a class="dropdown-item" th:href="@{/users/info}">Личные данные</a></li>
                             <li><a class="dropdown-item" th:href="@{/tickets/users/{userId}(userId=${user.id})}">Список билетов</a></li>
                         </ul>
                     </li>

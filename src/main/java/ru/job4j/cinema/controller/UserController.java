@@ -2,10 +2,7 @@ package ru.job4j.cinema.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import ru.job4j.cinema.model.User;
 import ru.job4j.cinema.service.UserService;
 
@@ -30,6 +27,13 @@ public class UserController {
     @GetMapping("/login")
     public String getLoginPage() {
         return "users/login";
+    }
+
+    @GetMapping("/info")
+    public String getUserInfo(Model model, HttpSession session) {
+        var user = (User) session.getAttribute("user");
+        model.addAttribute("user", user);
+        return "users/info";
     }
 
     @PostMapping("/register")
