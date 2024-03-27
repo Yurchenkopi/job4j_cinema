@@ -6,6 +6,8 @@ import java.util.Collection;
 
 public interface FilmRepository {
 
+    Film save(Film film);
+
     Film findById(int id);
 
     Collection<Film> findAll();

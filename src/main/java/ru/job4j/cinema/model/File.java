@@ -13,8 +13,7 @@ public class File {
     public File() {
     }
 
-    public File(int id, String name, String path) {
-        this.id = id;
+    public File(String name, String path) {
         this.name = name;
         this.path = path;
     }

@@ -1,5 +1,5 @@
 INSERT INTO films
-    (name, description, year, genre_id,
+    (name, description, "year", genre_id,
      minimal_age, duration_in_minutes, file_id)
 VALUES
 ('Поймай меня, если сможешь',

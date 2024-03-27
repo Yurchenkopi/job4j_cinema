@@ -72,7 +72,7 @@ public class Sql2oTicketRepository implements TicketRepository {
 
     @Override
     public boolean refund(Ticket ticket) {
-        try(var connection = sql2o.open()) {
+        try (var connection = sql2o.open()) {
             var sql = """
                     DELETE FROM tickets
                     WHERE id = :id;
