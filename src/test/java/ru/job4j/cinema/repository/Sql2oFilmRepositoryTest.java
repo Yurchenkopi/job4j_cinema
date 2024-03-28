@@ -12,6 +12,7 @@ import ru.job4j.cinema.model.Film;
 import java.util.List;
 import java.util.Properties;
 
+import static java.util.Collections.emptyList;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 public class Sql2oFilmRepositoryTest {
@@ -53,7 +54,7 @@ public class Sql2oFilmRepositoryTest {
     public void clearFilms() {
         try (var connection = sql2o.open()) {
             var query = connection.createQuery(
-                    "DELETE FROM films WHERE id > 0");
+                    "DELETE FROM films WHERE id >= 0");
             query.executeUpdate();
         }
     }
@@ -87,6 +88,12 @@ public class Sql2oFilmRepositoryTest {
         ));
         var result = sql2oFilmRepository.findAll();
         assertThat(result).isEqualTo(List.of(film1, film2, film3));
+    }
+
+    @Test
+    public void whenDontSaveThenNothingFound() {
+        assertThat(sql2oFilmRepository.findAll()).isEqualTo(emptyList());
+        assertThat(sql2oFilmRepository.findById(0)).isNull();
     }
 
 }
