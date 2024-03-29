@@ -31,9 +31,8 @@ public class FilmSession {
     }
 
     public FilmSession(
-            int id, int filmId, int hallId,
+            int filmId, int hallId,
             LocalDateTime startTime, LocalDateTime endTime, int price) {
-        this.id = id;
         this.filmId = filmId;
         this.hallId = hallId;
         this.startTime = startTime;

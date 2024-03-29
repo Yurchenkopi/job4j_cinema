@@ -2,6 +2,7 @@ package ru.job4j.cinema.repository;
 
 import org.springframework.stereotype.Repository;
 import org.sql2o.Sql2o;
+import ru.job4j.cinema.model.Genre;
 import ru.job4j.cinema.model.Hall;
 
 import java.util.Collection;
@@ -13,6 +14,25 @@ public class Sql2oHallRepository implements HallRepository {
 
     public Sql2oHallRepository(Sql2o sql2o) {
         this.sql2o = sql2o;
+    }
+
+    @Override
+    public Hall save(Hall hall) {
+        try (var connection = sql2o.open()) {
+            var sql = """
+                    INSERT INTO halls(name, row_count, place_count, description)
+                    VALUES
+                    (:name, :rowCount, :placeCount, :description);
+                    """;
+            var query = connection.createQuery(sql)
+                    .addParameter("name", hall.getName())
+                    .addParameter("rowCount", hall.getRowCount())
+                    .addParameter("placeCount", hall.getPlaceCount())
+                    .addParameter("description", hall.getDescription());
+            int generatedId = query.executeUpdate().getKey(Integer.class);
+            hall.setId(generatedId);
+            return hall;
+        }
     }
 
     @Override

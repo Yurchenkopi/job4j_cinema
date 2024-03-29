@@ -27,10 +27,9 @@ public class Hall {
     }
 
     public Hall(
-            int id, String name, int rowCount,
+            String name, int rowCount,
             int placeCount, String description
     ) {
-        this.id = id;
         this.name = name;
         this.rowCount = rowCount;
         this.placeCount = placeCount;

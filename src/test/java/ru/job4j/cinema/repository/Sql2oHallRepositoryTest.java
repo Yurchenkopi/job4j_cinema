@@ -5,7 +5,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.sql2o.Sql2o;
 import ru.job4j.cinema.configuration.DatasourceConfiguration;
-import ru.job4j.cinema.model.Genre;
+import ru.job4j.cinema.model.Hall;
 
 import java.util.List;
 import java.util.Properties;
@@ -13,17 +13,15 @@ import java.util.Properties;
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-public class Sql2oGenreRepositoryTest {
-
-
+public class Sql2oHallRepositoryTest {
     private static Sql2o sql2o;
-    private static Sql2oGenreRepository sql2oGenreRepository;
 
+    private static Sql2oHallRepository sql2oHallRepository;
 
     @BeforeAll
     public static void initRepositories() throws Exception {
         var properties = new Properties();
-        try (var inputStream = Sql2oFilmRepositoryTest.class.getClassLoader().getResourceAsStream("connection.properties")) {
+        try (var inputStream = Sql2oHallRepository.class.getClassLoader().getResourceAsStream("connection.properties")) {
             properties.load(inputStream);
         }
         var url = properties.getProperty("datasource.url");
@@ -34,38 +32,43 @@ public class Sql2oGenreRepositoryTest {
         var datasource = configuration.connectionPool(url, username, password);
         sql2o = configuration.databaseClient(datasource);
 
-        sql2oGenreRepository = new Sql2oGenreRepository(sql2o);
-
+        sql2oHallRepository = new Sql2oHallRepository(sql2o);
     }
 
     @AfterEach
-    public void clearGenres() {
+    public void clearHalls() {
         try (var connection = sql2o.open()) {
             var query = connection.createQuery(
-                    "DELETE FROM genres WHERE id >= 0");
+                    "DELETE FROM halls WHERE id >= 0");
             query.executeUpdate();
         }
     }
     @Test
     public void whenSaveThenGetSame() {
-        var expectedGenre = sql2oGenreRepository.save(new Genre("Триллер"));
-        var savedFilm = sql2oGenreRepository.findById(expectedGenre.getId());
-        assertThat(savedFilm).usingRecursiveComparison().isEqualTo(expectedGenre);
+        var expectedHall = sql2oHallRepository.save(new Hall("Зеленый", 20, 30, "Большой зал."));
+        var savedHall = sql2oHallRepository.findById(expectedHall.getId());
+        assertThat(savedHall).usingRecursiveComparison().isEqualTo(expectedHall);
     }
 
     @Test
     public void whenSaveSeveralThenGetAll() {
-        var genre1 = sql2oGenreRepository.save(new Genre("Боевик"));
-        var genre2 = sql2oGenreRepository.save(new Genre("Драма"));
-        var genre3 = sql2oGenreRepository.save(new Genre("Фантастика"));
-        var result = sql2oGenreRepository.findAll();
-        assertThat(result).isEqualTo(List.of(genre1, genre2, genre3));
+        var hall1 = sql2oHallRepository.save(new Hall(
+                "Зеленый", 20, 30, "Большой зал."
+        ));
+        var hall2 = sql2oHallRepository.save(new Hall(
+                "Красный", 15, 25, "Средний зал."
+        ));
+        var hall3 = sql2oHallRepository.save(new Hall(
+                "Синий", 5, 15, "Малый зал."
+        ));
+        var result = sql2oHallRepository.findAll();
+        assertThat(result).isEqualTo(List.of(hall1, hall2, hall3));
     }
 
     @Test
     public void whenDontSaveThenNothingFound() {
-        assertThat(sql2oGenreRepository.findAll()).isEqualTo(emptyList());
-        assertThat(sql2oGenreRepository.findById(0)).isNull();
+        assertThat(sql2oHallRepository.findAll()).isEqualTo(emptyList());
+        assertThat(sql2oHallRepository.findById(0)).isNull();
     }
 
 }

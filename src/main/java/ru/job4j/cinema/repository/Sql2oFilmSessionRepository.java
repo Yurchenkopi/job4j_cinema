@@ -3,6 +3,7 @@ package ru.job4j.cinema.repository;
 import org.springframework.stereotype.Repository;
 import org.sql2o.Sql2o;
 import ru.job4j.cinema.model.FilmSession;
+import ru.job4j.cinema.model.Hall;
 
 import java.util.Collection;
 
@@ -13,6 +14,26 @@ public class Sql2oFilmSessionRepository implements FilmSessionRepository {
 
     public Sql2oFilmSessionRepository(Sql2o sql2o) {
         this.sql2o = sql2o;
+    }
+
+    @Override
+    public FilmSession save(FilmSession filmSession) {
+        try (var connection = sql2o.open()) {
+            var sql = """
+                    INSERT INTO film_sessions(film_id, hall_id, start_time, end_time, price)
+                    VALUES
+                    (:filmId, :hallId, :startTime, :endTime, :price);
+                    """;
+            var query = connection.createQuery(sql)
+                    .addParameter("filmId", filmSession.getFilmId())
+                    .addParameter("hallId", filmSession.getHallId())
+                    .addParameter("startTime", filmSession.getStartTime())
+                    .addParameter("endTime", filmSession.getEndTime())
+                    .addParameter("price", filmSession.getPrice());
+            int generatedId = query.executeUpdate().getKey(Integer.class);
+            filmSession.setId(generatedId);
+            return filmSession;
+        }
     }
 
     @Override
