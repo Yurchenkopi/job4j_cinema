@@ -2,7 +2,6 @@ package ru.job4j.cinema.repository;
 
 import org.springframework.stereotype.Repository;
 import org.sql2o.Sql2o;
-import ru.job4j.cinema.model.Genre;
 import ru.job4j.cinema.model.Hall;
 
 import java.util.Collection;
@@ -55,6 +54,15 @@ public class Sql2oHallRepository implements HallRepository {
                     """;
             var query = connection.createQuery(sql);
             return query.setColumnMappings(Hall.COLUMN_MAPPING).executeAndFetch(Hall.class);
+        }
+    }
+
+    @Override
+    public void deleteById(int id) {
+        try (var connection = sql2o.open()) {
+            var query = connection.createQuery(
+                    "DELETE FROM halls WHERE id = :id");
+            query.addParameter("id", id).executeUpdate();
         }
     }
 

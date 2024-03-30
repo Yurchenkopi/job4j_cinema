@@ -1,12 +1,14 @@
 package ru.job4j.cinema.repository;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.sql2o.Sql2o;
 import ru.job4j.cinema.configuration.DatasourceConfiguration;
 import ru.job4j.cinema.model.Hall;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.List;
 import java.util.Properties;
 
@@ -33,16 +35,39 @@ public class Sql2oHallRepositoryTest {
         sql2o = configuration.databaseClient(datasource);
 
         sql2oHallRepository = new Sql2oHallRepository(sql2o);
+
+        clearAllHalls();
     }
 
     @AfterEach
     public void clearHalls() {
-        try (var connection = sql2o.open()) {
-            var query = connection.createQuery(
-                    "DELETE FROM halls WHERE id >= 0");
-            query.executeUpdate();
+        clearAllHalls();
+    }
+
+    @AfterAll
+    public static void restoreHallTable() {
+        var file = new java.io.File("db/scripts/011_dml_insert_halls.sql");
+        if (file.exists()) {
+            try (BufferedReader input = new BufferedReader(
+                    new InputStreamReader(new FileInputStream(file), "UTF-8"))
+            ) {
+                StringBuilder sql = new StringBuilder();
+                int read;
+                while ((read = input.read()) != -1) {
+                    sql.append((char) read);
+                }
+                try (var connection = sql2o.open()) {
+                    var query = connection.createQuery(sql.toString());
+                    query.executeUpdate();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            System.err.println("SQL script not found");
         }
     }
+
     @Test
     public void whenSaveThenGetSame() {
         var expectedHall = sql2oHallRepository.save(new Hall("Зеленый", 20, 30, "Большой зал."));
@@ -69,6 +94,11 @@ public class Sql2oHallRepositoryTest {
     public void whenDontSaveThenNothingFound() {
         assertThat(sql2oHallRepository.findAll()).isEqualTo(emptyList());
         assertThat(sql2oHallRepository.findById(0)).isNull();
+    }
+
+    public static void clearAllHalls() {
+        sql2oHallRepository.findAll()
+                .forEach(hall -> sql2oHallRepository.deleteById(hall.getId()));
     }
 
 }

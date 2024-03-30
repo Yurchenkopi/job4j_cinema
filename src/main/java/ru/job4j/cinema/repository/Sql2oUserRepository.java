@@ -54,4 +54,5 @@ public class Sql2oUserRepository implements UserRepository {
             return Optional.ofNullable(user);
         }
     }
+
 }

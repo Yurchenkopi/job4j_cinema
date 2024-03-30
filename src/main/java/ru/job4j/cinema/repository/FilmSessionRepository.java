@@ -15,4 +15,6 @@ public interface FilmSessionRepository {
     Collection<FilmSession> findByHalls(int hallId);
 
     Collection<FilmSession> findByFilms(int filmId);
+
+    void deleteById(int id);
 }

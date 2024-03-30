@@ -10,5 +10,7 @@ public interface FilmRepository {
 
     Film findById(int id);
 
+    void deleteById(int id);
+
     Collection<Film> findAll();
 }

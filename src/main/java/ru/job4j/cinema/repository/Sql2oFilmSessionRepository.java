@@ -3,7 +3,6 @@ package ru.job4j.cinema.repository;
 import org.springframework.stereotype.Repository;
 import org.sql2o.Sql2o;
 import ru.job4j.cinema.model.FilmSession;
-import ru.job4j.cinema.model.Hall;
 
 import java.util.Collection;
 
@@ -80,6 +79,15 @@ public class Sql2oFilmSessionRepository implements FilmSessionRepository {
             var query = connection.createQuery(sql);
             query.addParameter("filmId", filmId);
             return query.setColumnMappings(FilmSession.COLUMN_MAPPING).executeAndFetch(FilmSession.class);
+        }
+    }
+
+    @Override
+    public void deleteById(int id) {
+        try (var connection = sql2o.open()) {
+            var query = connection.createQuery(
+                    "DELETE FROM film_sessions WHERE id = :id");
+            query.addParameter("id", id).executeUpdate();
         }
     }
 }
