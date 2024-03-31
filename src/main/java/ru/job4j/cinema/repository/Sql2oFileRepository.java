@@ -1,5 +1,7 @@
 package ru.job4j.cinema.repository;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 import org.sql2o.Sql2o;
 import ru.job4j.cinema.model.File;
@@ -11,12 +13,16 @@ public class Sql2oFileRepository implements FileRepository {
 
     private final Sql2o sql2o;
 
+    private static final Logger LOG = LoggerFactory.getLogger(Sql2oFileRepository.class.getName());
+
+
     public Sql2oFileRepository(Sql2o sql2o) {
         this.sql2o = sql2o;
     }
 
     @Override
     public Optional<File> findById(int id) {
+        Optional<File> rsl = Optional.empty();
         try (var connection = sql2o.open()) {
             var sql = """
                     SELECT * FROM files WHERE id = :id;
@@ -24,8 +30,11 @@ public class Sql2oFileRepository implements FileRepository {
             var query = connection.createQuery(sql);
             query.addParameter("id", id);
             var file = query.executeAndFetchFirst(File.class);
-            return Optional.of(file);
+            rsl =  Optional.of(file);
+        } catch (Exception e) {
+            LOG.error("Файл по указананному ID не найден.", e);
         }
+        return rsl;
     }
 
     @Override

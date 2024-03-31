@@ -1,4 +1,4 @@
-package ru.job4j.cinema.repository;
+package ru.job4j.cinema.service;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import ru.job4j.cinema.configuration.DatasourceConfiguration;
 import ru.job4j.cinema.model.*;
+import ru.job4j.cinema.repository.*;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -15,9 +16,9 @@ import java.util.Properties;
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-public class Sql2oFilmSessionRepositoryTest {
+public class SimpleFilmSessionServiceTest {
 
-    private static Sql2oFilmSessionRepository sql2oFilmSessionRepository;
+    private static SimpleFilmSessionService simpleFilmSessionService;
 
     private static Sql2oFilmRepository sql2oFilmRepository;
 
@@ -57,9 +58,16 @@ public class Sql2oFilmSessionRepositoryTest {
         var datasource = configuration.connectionPool(url, username, password);
         var sql2o = configuration.databaseClient(datasource);
 
-        sql2oFilmSessionRepository = new Sql2oFilmSessionRepository(sql2o);
+        var sql2oFilmSessionRepository = new Sql2oFilmSessionRepository(sql2o);
         sql2oFilmRepository = new Sql2oFilmRepository(sql2o);
         sql2oHallRepository = new Sql2oHallRepository(sql2o);
+
+        simpleFilmSessionService = new SimpleFilmSessionService(
+                sql2oFilmSessionRepository,
+                sql2oFilmRepository,
+                sql2oHallRepository
+        );
+
         sql2oGenreRepository = new Sql2oGenreRepository(sql2o);
         sql2oFileRepository = new Sql2oFileRepository(sql2o);
 
@@ -113,32 +121,32 @@ public class Sql2oFilmSessionRepositoryTest {
     @Test
     public void whenSaveThenGetSame() {
         var currenDate = LocalDateTime.now();
-        var expectedFilmSession = sql2oFilmSessionRepository.save(new FilmSession(
+        var expectedFilmSession = simpleFilmSessionService.save(new FilmSession(
                 film1.getId(), hall1.getId(), currenDate.with(LocalTime.of(10, 0)),
                 currenDate.with(LocalTime.of(11, 40)), 333
         ));
-        var savedFilmSession = sql2oFilmSessionRepository.findById(expectedFilmSession.getId());
+        var savedFilmSession = simpleFilmSessionService.findById(expectedFilmSession.getId()).get();
         assertThat(savedFilmSession).usingRecursiveComparison().isEqualTo(expectedFilmSession);
     }
 
     @Test
     public void whenSaveSeveralThenGetAll() {
         var currenDate = LocalDateTime.now();
-        var filmSession1 = sql2oFilmSessionRepository.save(new FilmSession(
+        var filmSession1 = simpleFilmSessionService.save(new FilmSession(
                 film1.getId(), hall1.getId(), currenDate.with(LocalTime.of(9, 0)),
                 currenDate.with(LocalTime.of(11, 0)), 300
         ));
-        var filmSession2 = sql2oFilmSessionRepository.save(new FilmSession(
+        var filmSession2 = simpleFilmSessionService.save(new FilmSession(
                 film3.getId(), hall2.getId(), currenDate.with(LocalTime.of(12, 0)),
                 currenDate.with(LocalTime.of(14, 30)), 400
         ));
-        var filmSession3 = sql2oFilmSessionRepository.save(new FilmSession(
+        var filmSession3 = simpleFilmSessionService.save(new FilmSession(
                 film3.getId(), hall1.getId(), currenDate.with(LocalTime.of(11, 20)),
                 currenDate.with(LocalTime.of(13, 40)), 800
         ));
-        var resultAll = sql2oFilmSessionRepository.findAll();
-        var resultByHalls = sql2oFilmSessionRepository.findByHalls(hall1.getId());
-        var resultByFilms = sql2oFilmSessionRepository.findByFilms(film3.getId());
+        var resultAll = simpleFilmSessionService.findAll();
+        var resultByHalls = simpleFilmSessionService.findByHalls(hall1.getId());
+        var resultByFilms = simpleFilmSessionService.findByFilms(film3.getId());
 
         assertThat(resultAll).usingRecursiveComparison().isEqualTo(List.of(filmSession1, filmSession2, filmSession3));
         assertThat(resultByHalls).usingRecursiveComparison().isEqualTo(List.of(filmSession1, filmSession3));
@@ -147,14 +155,14 @@ public class Sql2oFilmSessionRepositoryTest {
 
     @Test
     public void whenDontSaveThenNothingFound() {
-        assertThat(sql2oFilmSessionRepository.findAll()).isEqualTo(emptyList());
-        assertThat(sql2oFilmSessionRepository.findByHalls(hall1.getId())).isEqualTo(emptyList());
-        assertThat(sql2oFilmSessionRepository.findByFilms(film1.getId())).isEqualTo(emptyList());
-        assertThat(sql2oFilmSessionRepository.findById(0)).isNull();
+        assertThat(simpleFilmSessionService.findAll()).isEqualTo(emptyList());
+        assertThat(simpleFilmSessionService.findByHalls(hall1.getId())).isEqualTo(emptyList());
+        assertThat(simpleFilmSessionService.findByFilms(film1.getId())).isEqualTo(emptyList());
+        assertThat(simpleFilmSessionService.findById(0)).isEmpty();
     }
 
     public static void clearAllFilmSessions() {
-        sql2oFilmSessionRepository.findAll()
-                .forEach(filmSession -> sql2oFilmSessionRepository.deleteById(filmSession.getId()));
+        simpleFilmSessionService.findAll()
+                .forEach(filmSession -> simpleFilmSessionService.deleteById(filmSession.getId()));
     }
 }

@@ -7,7 +7,7 @@ import ru.job4j.cinema.repository.FilmRepository;
 import ru.job4j.cinema.repository.GenreRepository;
 
 import java.util.Collection;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 @Service
 public class SimpleFilmService implements FilmService {
@@ -25,29 +25,44 @@ public class SimpleFilmService implements FilmService {
     }
 
     @Override
-    public FilmDto findById(int id) {
-        return filmToDto(filmRepository.findById(id));
+    public FilmDto save(Film film) {
+        return filmToDto(Optional.ofNullable(filmRepository.save(film)));
+    }
+
+    @Override
+    public Optional<FilmDto> findById(int id) {
+        return Optional.ofNullable(filmToDto(Optional.ofNullable(filmRepository.findById(id))));
     }
 
     @Override
     public Collection<FilmDto> findAll() {
         return filmRepository.findAll().stream()
-                .map(this::filmToDto)
-                .collect(Collectors.toList());
+                .map(f -> filmToDto(Optional.ofNullable(f)))
+                .toList();
     }
 
-    private FilmDto filmToDto(Film film) {
-        int filmId = film.getId();
-        var genreName = genreRepository.findById(film.getGenreId()).getName();
-        return new FilmDto(
-                filmId,
-                film.getName(),
-                film.getDescription(),
-                film.getYear(),
-                genreName,
-                film.getMinimalAge(),
-                film.getDurationInMinutes(),
-                film.getFileId()
-        );
+    @Override
+    public void deleteById(int id) {
+        filmRepository.deleteById(id);
     }
+
+    private FilmDto filmToDto(Optional<Film> filmOptional) {
+        FilmDto rsl = null;
+        if (filmOptional.isPresent()) {
+            var film = filmOptional.get();
+            var genreName = genreRepository.findById(film.getGenreId()).getName();
+            rsl = new FilmDto(
+                    film.getId(),
+                    film.getName(),
+                    film.getDescription(),
+                    film.getYear(),
+                    genreName,
+                    film.getMinimalAge(),
+                    film.getDurationInMinutes(),
+                    film.getFileId()
+            );
+        }
+        return rsl;
+    }
+
 }

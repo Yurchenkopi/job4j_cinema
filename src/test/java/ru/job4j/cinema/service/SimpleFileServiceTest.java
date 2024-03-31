@@ -1,35 +1,42 @@
-package ru.job4j.cinema.repository;
+package ru.job4j.cinema.service;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.sql2o.Sql2o;
 import ru.job4j.cinema.configuration.DatasourceConfiguration;
-import ru.job4j.cinema.model.Genre;
+import ru.job4j.cinema.dto.FileDto;
+import ru.job4j.cinema.model.File;
+import ru.job4j.cinema.repository.Sql2oFileRepository;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Properties;
 
-import static java.util.Collections.emptyList;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-public class Sql2oGenreRepositoryTest {
-
+public class SimpleFileServiceTest {
 
     private static Sql2o sql2o;
-    private static Sql2oGenreRepository sql2oGenreRepository;
 
+    private static SimpleFileService simpleFileService;
+
+    private static Sql2oFileRepository sql2oFileRepository;
+
+    @TempDir
+    java.io.File tempDir;
 
     @BeforeAll
     public static void initRepositories() throws Exception {
         var properties = new Properties();
-        try (var inputStream = Sql2oGenreRepositoryTest.class.getClassLoader().getResourceAsStream("connection.properties")) {
+        try (var inputStream = Sql2oFileRepository.class.getClassLoader().getResourceAsStream("connection.properties")) {
             properties.load(inputStream);
         }
         var url = properties.getProperty("datasource.url");
@@ -40,19 +47,21 @@ public class Sql2oGenreRepositoryTest {
         var datasource = configuration.connectionPool(url, username, password);
         sql2o = configuration.databaseClient(datasource);
 
-        sql2oGenreRepository = new Sql2oGenreRepository(sql2o);
+        sql2oFileRepository = new Sql2oFileRepository(sql2o);
 
-        clearAllGenres();
+        simpleFileService = new SimpleFileService(sql2oFileRepository, "files");
+
+        clearAllFiles();
     }
 
     @AfterEach
-    public void clearGenres() {
-        clearAllGenres();
+    public void clearFiles() {
+        clearAllFiles();
     }
 
     @AfterAll
-    public static void restoreGenresTable() {
-        var file = new java.io.File("db/scripts/009_dml_insert_genres.sql");
+    public static void restoreFileTable() {
+        var file = new java.io.File("db/scripts/008_dml_insert_files.sql");
         if (file.exists()) {
             try (BufferedReader input = new BufferedReader(
                     new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))
@@ -75,30 +84,26 @@ public class Sql2oGenreRepositoryTest {
     }
 
     @Test
-    public void whenSaveThenGetSame() {
-        var expectedGenre = sql2oGenreRepository.save(new Genre("Триллер"));
-        var savedGenre = sql2oGenreRepository.findById(expectedGenre.getId());
-        assertThat(savedGenre).usingRecursiveComparison().isEqualTo(expectedGenre);
-    }
-
-    @Test
-    public void whenSaveSeveralThenGetAll() {
-        var genre1 = sql2oGenreRepository.save(new Genre("Боевик"));
-        var genre2 = sql2oGenreRepository.save(new Genre("Драма"));
-        var genre3 = sql2oGenreRepository.save(new Genre("Фантастика"));
-        var result = sql2oGenreRepository.findAll();
-        assertThat(result).usingRecursiveComparison().isEqualTo(List.of(genre1, genre2, genre3));
+    public void whenSaveThenGetSame() throws Exception {
+        var tempFile = new java.io.File(tempDir, "testFile.txt");
+        String path = tempFile.getPath();
+        var expectedFileDto = new FileDto(path, new byte[] {1, 2, 3});
+        Files.write(Path.of(path), expectedFileDto.getContent());
+        var testFile = sql2oFileRepository.save(new File(tempFile.getName(), path));
+        var savedFile = simpleFileService.getFileById(testFile.getId()).get();
+        assertThat(savedFile).usingRecursiveComparison().isEqualTo(expectedFileDto);
     }
 
     @Test
     public void whenDontSaveThenNothingFound() {
-        assertThat(sql2oGenreRepository.findAll()).isEqualTo(emptyList());
-        assertThat(sql2oGenreRepository.findById(0)).isNull();
+        assertThat(simpleFileService.getFileById(0)).isEmpty();
     }
 
-    public static void clearAllGenres() {
-        sql2oGenreRepository.findAll()
-                .forEach(genre -> sql2oGenreRepository.deleteById(genre.getId()));
+    public static void clearAllFiles() {
+        try (var connection = sql2o.open()) {
+            var query = connection.createQuery("DELETE FROM files WHERE id >= 0");
+            query.executeUpdate();
+        }
     }
 
 }

@@ -13,5 +13,7 @@ public interface TicketRepository {
 
     Collection<Ticket> findByUser(int userId);
 
+    Collection<Ticket> findAll();
+
     boolean refund(Ticket ticket);
 }

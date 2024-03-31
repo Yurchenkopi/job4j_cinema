@@ -9,6 +9,7 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Properties;
 
@@ -49,7 +50,7 @@ public class Sql2oHallRepositoryTest {
         var file = new java.io.File("db/scripts/011_dml_insert_halls.sql");
         if (file.exists()) {
             try (BufferedReader input = new BufferedReader(
-                    new InputStreamReader(new FileInputStream(file), "UTF-8"))
+                    new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))
             ) {
                 StringBuilder sql = new StringBuilder();
                 int read;
@@ -87,7 +88,7 @@ public class Sql2oHallRepositoryTest {
                 "Синий", 5, 15, "Малый зал."
         ));
         var result = sql2oHallRepository.findAll();
-        assertThat(result).isEqualTo(List.of(hall1, hall2, hall3));
+        assertThat(result).usingRecursiveComparison().isEqualTo(List.of(hall1, hall2, hall3));
     }
 
     @Test

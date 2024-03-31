@@ -55,4 +55,13 @@ public class Sql2oUserRepository implements UserRepository {
         }
     }
 
+    @Override
+    public void deleteById(int id) {
+        try (var connection = sql2o.open()) {
+            var query = connection.createQuery(
+                    "DELETE FROM users WHERE id = :id");
+            query.addParameter("id", id).executeUpdate();
+        }
+    }
+
 }

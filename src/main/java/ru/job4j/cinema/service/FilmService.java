@@ -4,10 +4,15 @@ import ru.job4j.cinema.dto.FilmDto;
 import ru.job4j.cinema.model.Film;
 
 import java.util.Collection;
+import java.util.Optional;
 
 public interface FilmService {
 
-    FilmDto findById(int id);
+    FilmDto save(Film film);
+
+    Optional<FilmDto> findById(int id);
 
     Collection<FilmDto> findAll();
+
+    void deleteById(int id);
 }

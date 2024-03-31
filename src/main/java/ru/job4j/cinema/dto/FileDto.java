@@ -1,5 +1,4 @@
 package ru.job4j.cinema.dto;
-
 public class FileDto {
 
     private String name;

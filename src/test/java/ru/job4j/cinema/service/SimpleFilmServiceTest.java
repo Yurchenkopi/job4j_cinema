@@ -1,4 +1,4 @@
-package ru.job4j.cinema.repository;
+package ru.job4j.cinema.service;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -8,6 +8,10 @@ import ru.job4j.cinema.configuration.DatasourceConfiguration;
 import ru.job4j.cinema.model.File;
 import ru.job4j.cinema.model.Film;
 import ru.job4j.cinema.model.Genre;
+import ru.job4j.cinema.repository.Sql2oFileRepository;
+import ru.job4j.cinema.repository.Sql2oFilmRepository;
+import ru.job4j.cinema.repository.Sql2oFilmRepositoryTest;
+import ru.job4j.cinema.repository.Sql2oGenreRepository;
 
 import java.util.List;
 import java.util.Properties;
@@ -15,9 +19,9 @@ import java.util.Properties;
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-public class Sql2oFilmRepositoryTest {
+public class SimpleFilmServiceTest {
 
-    private static Sql2oFilmRepository sql2oFilmRepository;
+    private static SimpleFilmService simpleFilmService;
 
     private static Sql2oGenreRepository sql2oGenreRepository;
 
@@ -41,7 +45,7 @@ public class Sql2oFilmRepositoryTest {
         var datasource = configuration.connectionPool(url, username, password);
         var sql2o = configuration.databaseClient(datasource);
 
-        sql2oFilmRepository = new Sql2oFilmRepository(sql2o);
+        var sql2oFilmRepository = new Sql2oFilmRepository(sql2o);
         sql2oGenreRepository = new Sql2oGenreRepository(sql2o);
         sql2oFileRepository = new Sql2oFileRepository(sql2o);
 
@@ -50,6 +54,8 @@ public class Sql2oFilmRepositoryTest {
 
         sql2oGenreRepository.save(genre);
         sql2oFileRepository.save(file);
+
+        simpleFilmService = new SimpleFilmService(sql2oFilmRepository, sql2oGenreRepository);
 
         clearAllFilms();
 
@@ -68,45 +74,45 @@ public class Sql2oFilmRepositoryTest {
 
     @Test
     public void whenSaveThenGetSame() {
-        var expectedFilm = sql2oFilmRepository.save(new Film(
+        var expectedFilmDto = simpleFilmService.save(new Film(
                 0, "Поймай меня, если сможешь",
                 "Тестовое описание",
                 2002, genre.getId(), 18, 141, file.getId()
         ));
-        var savedFilm = sql2oFilmRepository.findById(expectedFilm.getId());
-        assertThat(savedFilm).usingRecursiveComparison().isEqualTo(expectedFilm);
+        var savedFilmDto = simpleFilmService.findById(expectedFilmDto.getId()).get();
+        assertThat(savedFilmDto).usingRecursiveComparison().isEqualTo(expectedFilmDto);
     }
 
     @Test
     public void whenSaveSeveralThenGetAll() {
-        var film1 = sql2oFilmRepository.save(new Film(
+        var filmDto1 = simpleFilmService.save(new Film(
                 0, "Поймай меня, если сможешь",
                 "Тестовое описание1",
                 2002, genre.getId(), 18, 141, file.getId()
         ));
-        var film2 = sql2oFilmRepository.save(new Film(
+        var filmDto2 = simpleFilmService.save(new Film(
                 0, "Гладиатор",
                 "Тестовое описание2",
                 2000, genre.getId(), 18, 155, file.getId()
         ));
-        var film3 = sql2oFilmRepository.save(new Film(
+        var filmDto3 = simpleFilmService.save(new Film(
                 0, "Властелин колец3",
                 "Тестовое описание",
                 2003, genre.getId(), 10, 201, file.getId()
         ));
-        var result = sql2oFilmRepository.findAll();
-        assertThat(result).usingRecursiveComparison().isEqualTo(List.of(film1, film2, film3));
+        var result = simpleFilmService.findAll();
+        assertThat(result).usingRecursiveComparison().isEqualTo(List.of(filmDto1, filmDto2, filmDto3));
     }
 
     @Test
     public void whenDontSaveThenNothingFound() {
-        assertThat(sql2oFilmRepository.findAll()).isEqualTo(emptyList());
-        assertThat(sql2oFilmRepository.findById(0)).isNull();
+        assertThat(simpleFilmService.findAll()).isEqualTo(emptyList());
+        assertThat(simpleFilmService.findById(0)).isEmpty();
     }
 
     public static void clearAllFilms() {
-        sql2oFilmRepository.findAll()
-                .forEach(film -> sql2oFilmRepository.deleteById(film.getId()));
+        simpleFilmService.findAll()
+                .forEach(film -> simpleFilmService.deleteById(film.getId()));
     }
 
 }

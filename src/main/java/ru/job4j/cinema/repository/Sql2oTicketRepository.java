@@ -71,6 +71,17 @@ public class Sql2oTicketRepository implements TicketRepository {
     }
 
     @Override
+    public Collection<Ticket> findAll() {
+        try (var connection = sql2o.open()) {
+            var sql = """
+                    SELECT * FROM tickets;
+                    """;
+            var query = connection.createQuery(sql);
+            return query.setColumnMappings(Ticket.COLUMN_MAPPING).executeAndFetch(Ticket.class);
+        }
+    }
+
+    @Override
     public boolean refund(Ticket ticket) {
         try (var connection = sql2o.open()) {
             var sql = """

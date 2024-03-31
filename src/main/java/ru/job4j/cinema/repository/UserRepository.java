@@ -10,4 +10,6 @@ public interface UserRepository {
 
     Optional<User> findByEmailAndPassword(String email, String password);
 
+    void deleteById(int id);
+
 }

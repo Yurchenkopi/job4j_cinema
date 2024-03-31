@@ -16,6 +16,11 @@ public class SimpleHallService implements HallService {
     }
 
     @Override
+    public Hall save(Hall hall) {
+        return hallRepository.save(hall);
+    }
+
+    @Override
     public Hall findById(int id) {
         return hallRepository.findById(id);
     }
@@ -23,5 +28,10 @@ public class SimpleHallService implements HallService {
     @Override
     public Collection<Hall> findAll() {
         return hallRepository.findAll();
+    }
+
+    @Override
+    public void deleteById(int id) {
+        hallRepository.deleteById(id);
     }
 }

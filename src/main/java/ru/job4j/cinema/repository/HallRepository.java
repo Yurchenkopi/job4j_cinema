@@ -7,6 +7,7 @@ import java.util.Collection;
 public interface HallRepository {
 
     Hall save(Hall hall);
+
     Hall findById(int id);
 
     void deleteById(int id);
