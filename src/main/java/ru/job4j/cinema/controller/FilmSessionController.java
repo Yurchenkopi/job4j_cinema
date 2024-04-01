@@ -34,12 +34,12 @@ public class FilmSessionController {
 
     @GetMapping("/{sessionId}")
     public String buyTicket(Model model, @PathVariable int sessionId, HttpSession session) {
-        var listOfRowPlaces = filmSessionService.findById(sessionId).getRowNums();
-        var listOfPlaces = filmSessionService.findById(sessionId).getPlaceNums();
+        var listOfRowPlaces = filmSessionService.findById(sessionId).get().getRowNums();
+        var listOfPlaces = filmSessionService.findById(sessionId).get().getPlaceNums();
         var user = (User) session.getAttribute("user");
         model.addAttribute("rowNums", listOfRowPlaces);
         model.addAttribute("placeNums", listOfPlaces);
-        model.addAttribute("filmSession", filmSessionService.findById(sessionId));
+        model.addAttribute("filmSession", filmSessionService.findById(sessionId).get());
         model.addAttribute("user", user);
         return "tickets/buy.html";
     }

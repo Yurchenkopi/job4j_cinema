@@ -82,14 +82,14 @@ public class Sql2oTicketRepository implements TicketRepository {
     }
 
     @Override
-    public boolean refund(Ticket ticket) {
+    public boolean refund(int ticketId) {
         try (var connection = sql2o.open()) {
             var sql = """
                     DELETE FROM tickets
                     WHERE id = :id;
                     """;
             var query = connection.createQuery(sql);
-            query.addParameter("id", ticket.getId());
+            query.addParameter("id", ticketId);
             var affectedRows = query.executeUpdate().getResult();
             return affectedRows > 0;
         }

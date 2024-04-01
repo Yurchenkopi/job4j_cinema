@@ -49,7 +49,7 @@ public class TicketController {
     @PostMapping("refund")
     public String refund(@ModelAttribute Ticket ticket, Model model) {
         try {
-            ticketService.refund(ticket);
+            ticketService.refund(ticket.getId());
             model.addAttribute("message", "Ожидайте возврат денежных средств.");
             return "messages/message";
         } catch (Exception exception) {

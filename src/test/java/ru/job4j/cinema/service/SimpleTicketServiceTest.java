@@ -1,4 +1,4 @@
-package ru.job4j.cinema.repository;
+package ru.job4j.cinema.service;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import ru.job4j.cinema.configuration.DatasourceConfiguration;
 import ru.job4j.cinema.model.*;
+import ru.job4j.cinema.repository.*;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -16,7 +17,9 @@ import static java.util.Collections.emptyList;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
-public class Sql2oTicketRepositoryTest {
+public class SimpleTicketServiceTest {
+
+    private static SimpleTicketService simpleTicketService;
 
     private static Sql2oTicketRepository sql2oTicketRepository;
 
@@ -135,6 +138,13 @@ public class Sql2oTicketRepositoryTest {
         sql2oUserRepository.save(user1);
         sql2oUserRepository.save(user2);
 
+        simpleTicketService = new SimpleTicketService(
+                sql2oTicketRepository,
+                sql2oFilmRepository,
+                sql2oHallRepository,
+                sql2oFilmSessionRepository
+        );
+
 
         clearAllTickets();
     }
@@ -163,59 +173,60 @@ public class Sql2oTicketRepositoryTest {
 
     @Test
     public void whenBuyThenGetSame() throws Exception {
-        var expectedTicket = sql2oTicketRepository.buy(new Ticket(
+        var expectedTicketDto = simpleTicketService.buy(new Ticket(
                 filmSession1.getId(), 5, 10, user1.getId()
         ));
-        var savedTicket = sql2oTicketRepository.getById(expectedTicket.get().getId());
-        assertThat(savedTicket).usingRecursiveComparison().isEqualTo(expectedTicket.get());
+        var savedTicket = simpleTicketService.findById(expectedTicketDto.get().getId());
+        assertThat(savedTicket).usingRecursiveComparison().isEqualTo(expectedTicketDto);
     }
 
     @Test
     public void whenBuySeveralThenGetAll() throws Exception {
-        var ticket1 = sql2oTicketRepository.buy(new Ticket(
+        var ticketDto1 = simpleTicketService.buy(new Ticket(
                 filmSession1.getId(), 5, 10, user2.getId()
         ));
-        var ticket2 = sql2oTicketRepository.buy(new Ticket(
+        var ticketDto2 = simpleTicketService.buy(new Ticket(
                 filmSession2.getId(), 7, 12, user1.getId()
         ));
-        var ticket3 = sql2oTicketRepository.buy(new Ticket(
+        var ticketDto3 = simpleTicketService.buy(new Ticket(
                 filmSession3.getId(), 5, 10, user1.getId()
         ));
-        var resultByUser = sql2oTicketRepository.findByUser(user1.getId());
-        var resultByUsers = sql2oTicketRepository.findAll();
-        assertThat(resultByUser).usingRecursiveComparison().isEqualTo(List.of(ticket2.get(), ticket3.get()));
-        assertThat(resultByUsers).usingRecursiveComparison().isEqualTo(List.of(ticket1.get(), ticket2.get(), ticket3.get()));
+        var resultByUser = simpleTicketService.findByUser(user1.getId());
+        var resultByUsers = simpleTicketService.findAll();
+        assertThat(resultByUser).usingRecursiveComparison().isEqualTo(List.of(ticketDto2.get(), ticketDto3.get()));
+        assertThat(resultByUsers).usingRecursiveComparison().isEqualTo(List.of(ticketDto1.get(), ticketDto2.get(), ticketDto3.get()));
     }
 
     @Test
     public void whenDontSaveThenNothingFound() {
-        assertThat(sql2oTicketRepository.findAll()).isEqualTo(emptyList());
-        assertThat(sql2oTicketRepository.findByUser(user1.getId())).isEqualTo(emptyList());
-        assertThat(sql2oTicketRepository.getById(0)).isNull();
+        assertThat(simpleTicketService.findAll()).isEqualTo(emptyList());
+        assertThat(simpleTicketService.findByUser(user1.getId())).isEqualTo(emptyList());
+        assertThat(simpleTicketService.findById(0)).isEmpty();
     }
 
     @Test
     public void whenTryBuyTheSameTicketThenThrowException() throws Exception {
-        var ticket1 = sql2oTicketRepository.buy(new Ticket(
+        var ticket = new Ticket(
                 filmSession1.getId(), 5, 10, user2.getId()
-        ));
-        assertThatThrownBy(() -> sql2oTicketRepository.buy(ticket1.get()))
+        );
+        var ticket1 = simpleTicketService.buy(ticket);
+        assertThatThrownBy(() -> simpleTicketService.buy(ticket))
                 .isInstanceOf(Exception.class)
                 .hasMessageContaining("Не удалось купить билет. Место уже занято.");
     }
 
     @Test
     public void whenRefundTicketThenNothingFound() throws Exception {
-        var ticket = sql2oTicketRepository.buy(new Ticket(
+        var ticket = simpleTicketService.buy(new Ticket(
                 filmSession1.getId(), 5, 10, user2.getId()
         ));
-        var result = sql2oTicketRepository.refund(ticket.get().getId());
+        var result = simpleTicketService.refund(ticket.get().getId());
         assertThat(result).isTrue();
         assertThat(sql2oTicketRepository.findAll()).isEqualTo(emptyList());
     }
 
     public static void clearAllTickets() {
-        sql2oTicketRepository.findAll()
-                .forEach(ticket -> sql2oTicketRepository.refund(ticket.getId()));
+        simpleTicketService.findAll()
+                .forEach(ticket -> simpleTicketService.refund(ticket.getId()));
     }
 }

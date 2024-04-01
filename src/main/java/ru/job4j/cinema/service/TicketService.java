@@ -9,11 +9,13 @@ import java.util.Optional;
 public interface TicketService {
 
 
-    Optional<Ticket> buy(Ticket ticket) throws Exception;
+    Optional<TicketDto> buy(Ticket ticket) throws Exception;
 
-    TicketDto findById(int id);
+    Optional<TicketDto> findById(int id);
+
+    Collection<TicketDto> findAll();
 
     Collection<TicketDto> findByUser(int userId);
 
-    boolean refund(Ticket ticket);
+    boolean refund(int ticketId);
 }

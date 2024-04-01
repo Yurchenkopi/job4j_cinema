@@ -1,6 +1,7 @@
 package ru.job4j.cinema.service;
 
 import org.springframework.stereotype.Service;
+import ru.job4j.cinema.dto.FilmDto;
 import ru.job4j.cinema.dto.TicketDto;
 import ru.job4j.cinema.model.Ticket;
 import ru.job4j.cinema.repository.FilmRepository;
@@ -35,41 +36,53 @@ public class SimpleTicketService implements TicketService {
     }
 
     @Override
-    public Optional<Ticket> buy(Ticket ticket) throws Exception {
-        return ticketRepository.buy(ticket);
+    public Optional<TicketDto> buy(Ticket ticket) throws Exception {
+        return Optional.ofNullable(ticketToDto(ticketRepository.buy(ticket)));
     }
 
     @Override
-    public TicketDto findById(int id) {
-        return ticketToDto(ticketRepository.getById(id));
+    public Optional<TicketDto> findById(int id) {
+        return Optional.ofNullable(ticketToDto(Optional.ofNullable(ticketRepository.getById(id))));
+    }
+
+    @Override
+    public Collection<TicketDto> findAll() {
+        return ticketRepository.findAll().stream()
+                .map(t -> ticketToDto(Optional.ofNullable(t)))
+                .toList();
     }
 
     @Override
     public Collection<TicketDto> findByUser(int userId) {
         return ticketRepository.findByUser(userId).stream()
-                .map(this::ticketToDto)
+                .map(t -> ticketToDto(Optional.ofNullable(t)))
                 .toList();
     }
 
     @Override
-    public boolean refund(Ticket ticket) {
-        return ticketRepository.refund(ticket);
+    public boolean refund(int ticketId) {
+        return ticketRepository.refund(ticketId);
     }
 
-    private TicketDto ticketToDto(Ticket ticket) {
-        int sessionId = ticket.getSessionId();
-        var session = filmSessionRepository.findById(sessionId);
-        var film = filmRepository.findById(session.getFilmId());
-        var hall = hallRepository.findById(session.getHallId());
-        return new TicketDto(
-                ticket.getId(),
-                film.getName(),
-                film.getFileId(),
-                hall.getName(),
-                session.getStartTime(),
-                session.getEndTime(),
-                ticket.getRowNumber(),
-                ticket.getPlaceNumber()
-        );
+    private TicketDto ticketToDto(Optional<Ticket> ticketOptional) {
+        TicketDto rsl = null;
+        if (ticketOptional.isPresent()) {
+            var ticket = ticketOptional.get();
+            int sessionId = ticket.getSessionId();
+            var session = filmSessionRepository.findById(sessionId);
+            var film = filmRepository.findById(session.getFilmId());
+            var hall = hallRepository.findById(session.getHallId());
+            rsl = new TicketDto(
+                    ticket.getId(),
+                    film.getName(),
+                    film.getFileId(),
+                    hall.getName(),
+                    session.getStartTime(),
+                    session.getEndTime(),
+                    ticket.getRowNumber(),
+                    ticket.getPlaceNumber()
+            );
+        }
+        return rsl;
     }
 }
