@@ -25,7 +25,7 @@ public class TicketController {
 
     @GetMapping("/{ticketId}")
     public String getById(Model model, @PathVariable int ticketId) {
-        model.addAttribute("ticket", ticketService.findById(ticketId));
+        model.addAttribute("ticket", ticketService.findById(ticketId).get());
         return "tickets/one";
     }
 

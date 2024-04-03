@@ -98,10 +98,10 @@ public class FilmSessionControllerTest {
         var filmSession1 = new FilmSession(
                 2, 2, currenDate.with(LocalTime.of(12, 0)), currenDate.with(LocalTime.of(15, 40)), 655
         );
-        var expectedFilmSession = new FilmSessionDto(filmSession1.getId(), "Гладиатор", 0, "Большой",
+        var expectedFilmSessionDto = new FilmSessionDto(filmSession1.getId(), "Гладиатор", 0, "Большой",
                 filmSession1.getStartTime(), filmSession1.getEndTime(), filmSession1.getPrice(), 5, 10);
 
-        when(filmSessionService.findById(anyInt())).thenReturn(Optional.of(expectedFilmSession));
+        when(filmSessionService.findById(anyInt())).thenReturn(Optional.of(expectedFilmSessionDto));
 
         var model = new ConcurrentModel();
         var httpSession = mock(HttpSession.class);
@@ -115,6 +115,6 @@ public class FilmSessionControllerTest {
         assertThat(view).isEqualTo("tickets/buy.html");
         assertThat(actualRowNums).isEqualTo(expectedListOfRowNums);
         assertThat(actualPlaceNums).isEqualTo(expectedListOfPlaceNums);
-        assertThat(actualFilmSession).isEqualTo(expectedFilmSession);
+        assertThat(actualFilmSession).isEqualTo(expectedFilmSessionDto);
     }
 }
