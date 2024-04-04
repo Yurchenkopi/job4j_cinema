@@ -9,7 +9,6 @@ import ru.job4j.cinema.dto.TicketDto;
 import ru.job4j.cinema.model.Ticket;
 import ru.job4j.cinema.service.TicketService;
 
-import javax.servlet.http.HttpSession;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
@@ -115,5 +114,34 @@ public class TicketControllerTest {
         assertThat(actualMessage).isEqualTo(expectedException.getMessage());
     }
 
+    @Test
+    public void whenRequestTicketRefundThenTicketRefundPageAndMessageSuccess() {
+        var expectedTicket = new Ticket(1, 5, 10, 1);
+        var expectedMessage = "Ожидайте возврат денежных средств.";
+        when(ticketService.refund(anyInt())).thenReturn(true);
+
+        var model = new ConcurrentModel();
+        var view = ticketController.refund(expectedTicket, model);
+
+        var actualMessage = model.getAttribute("message");
+
+        assertThat(view).isEqualTo("messages/message");
+        assertThat(actualMessage).isEqualTo(expectedMessage);
+    }
+
+    @Test
+    public void whenTryToRefundTicketThenErrorMessage() {
+        var expectedTicket = new Ticket(1, 5, 10, 1);
+        var expectedMessage = "Билет не найден.";
+        when(ticketService.refund(anyInt())).thenReturn(false);
+
+        var model = new ConcurrentModel();
+        var view = ticketController.refund(expectedTicket, model);
+
+        var actualMessage = model.getAttribute("message");
+
+        assertThat(view).isEqualTo("errors/404");
+        assertThat(actualMessage).isEqualTo(expectedMessage);
+    }
 
 }

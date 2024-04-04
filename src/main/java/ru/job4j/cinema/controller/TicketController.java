@@ -4,7 +4,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import ru.job4j.cinema.model.Ticket;
-import ru.job4j.cinema.service.FilmSessionService;
 import ru.job4j.cinema.service.TicketService;
 
 @Controller
@@ -48,14 +47,13 @@ public class TicketController {
 
     @PostMapping("refund")
     public String refund(@ModelAttribute Ticket ticket, Model model) {
-        try {
-            ticketService.refund(ticket.getId());
-            model.addAttribute("message", "Ожидайте возврат денежных средств.");
-            return "messages/message";
-        } catch (Exception exception) {
-            model.addAttribute("message", exception.getMessage());
+        var isDeleted = ticketService.refund(ticket.getId());
+        if (!isDeleted) {
+            model.addAttribute("message", "Билет не найден.");
             return "errors/404";
         }
+        model.addAttribute("message", "Ожидайте возврат денежных средств.");
+        return "messages/message";
     }
 
 }
