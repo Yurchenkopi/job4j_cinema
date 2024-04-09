@@ -50,6 +50,19 @@ public class TicketControllerTest {
     }
 
     @Test
+    public void whenRequestTicketIdPageThenTicketNotFound() {
+        var expectedMessage = "Билет не найден.";
+        when(ticketService.findById(anyInt())).thenReturn(Optional.empty());
+
+        var model = new ConcurrentModel();
+        var view = ticketController.getById(model, anyInt());
+        var actualMessage = model.getAttribute("message");
+
+        assertThat(view).isEqualTo("errors/404");
+        assertThat(actualMessage).usingRecursiveComparison().isEqualTo(expectedMessage);
+    }
+
+    @Test
     public void whenRequestTicketByUserPageThenGetTicketByUserPage() {
         var currenDate = LocalDateTime.now();
         var ticketDto1 = new TicketDto(
@@ -73,7 +86,7 @@ public class TicketControllerTest {
     }
 
     @Test
-    public void whenPostTicketThenSameDataAndMessageSuccess() throws Exception {
+    public void whenPostTicketThenSameDataAndMessageSuccess() {
         var currenDate = LocalDateTime.now();
         var expectedTicket = new Ticket(1, 5, 10, 1);
         var expectedMessage = String.format(
@@ -100,18 +113,18 @@ public class TicketControllerTest {
     }
 
     @Test
-    public void whenTryToBuyTicketThenThrowException() throws Exception {
-        var expectedException = new Exception("Не удалось купить билет. Место уже занято.");
+    public void whenTryToBuyTicketThenErrorOccurs() {
+        var expectedErrorMessage = "Не удалось купить билет. Место уже занято.";
         var expectedTicket = new Ticket(1, 5, 10, 1);
 
-        when(ticketService.buy(any(Ticket.class))).thenThrow(expectedException);
+        when(ticketService.buy(any(Ticket.class))).thenReturn(Optional.empty());
 
         var model = new ConcurrentModel();
         var view = ticketController.buyTicket(expectedTicket, model);
         var actualMessage = model.getAttribute("message");
 
         assertThat(view).isEqualTo("errors/404");
-        assertThat(actualMessage).isEqualTo(expectedException.getMessage());
+        assertThat(actualMessage).isEqualTo(expectedErrorMessage);
     }
 
     @Test

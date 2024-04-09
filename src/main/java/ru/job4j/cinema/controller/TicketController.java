@@ -24,25 +24,28 @@ public class TicketController {
 
     @GetMapping("/{ticketId}")
     public String getById(Model model, @PathVariable int ticketId) {
-        model.addAttribute("ticket", ticketService.findById(ticketId).get());
+        var ticketOptional = ticketService.findById(ticketId);
+        if (ticketOptional.isEmpty()) {
+            model.addAttribute("message", "Билет не найден.");
+            return "errors/404";
+        }
+        model.addAttribute("ticket", ticketOptional.get());
         return "tickets/one";
     }
 
     @PostMapping("/buy")
     public String buyTicket(@ModelAttribute Ticket ticket, Model model) {
-        try {
-            ticketService.buy(ticket);
-            var message = String.format(
-                    "Поздравляем!%sВы приобрели билет на ряд-%d, место-%d.",
-                    System.lineSeparator(),
-                    ticket.getRowNumber(), ticket.getPlaceNumber()
-            );
-            model.addAttribute("message", message);
-            return "messages/message";
-        } catch (Exception exception) {
-            model.addAttribute("message", exception.getMessage());
+        var ticketDtoOptional = ticketService.buy(ticket);
+        if (ticketDtoOptional.isEmpty()) {
+            model.addAttribute("message", "Не удалось купить билет. Место уже занято.");
             return "errors/404";
         }
+        var message = String.format(
+                "Поздравляем!%sВы приобрели билет на ряд-%d, место-%d.",
+                System.lineSeparator(),
+                ticket.getRowNumber(), ticket.getPlaceNumber());
+        model.addAttribute("message", message);
+        return "messages/message";
     }
 
     @PostMapping("refund")

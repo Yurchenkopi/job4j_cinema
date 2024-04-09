@@ -69,7 +69,7 @@ public class UserControllerTest {
         var view = userController.register(new User(), model, httpServletRequest);
         var actualMessage = model.getAttribute("message");
 
-        assertThat(view).isEqualTo("errors/404");
+        assertThat(view).isEqualTo("/users/register");
         assertThat(actualMessage).isEqualTo(expectedMessage);
     }
 

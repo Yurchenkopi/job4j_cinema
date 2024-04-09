@@ -21,8 +21,8 @@ public class Sql2oTicketRepository implements TicketRepository {
     }
 
     @Override
-    public Optional<Ticket> buy(Ticket ticket) throws Exception {
-        Optional<Ticket> rsl;
+    public Optional<Ticket> buy(Ticket ticket) {
+        Optional<Ticket> rsl = Optional.empty();
         try (var connection = sql2o.open()) {
             var sql = """
                     INSERT INTO tickets (session_id, row_number, place_number, user_id)
@@ -38,8 +38,7 @@ public class Sql2oTicketRepository implements TicketRepository {
             ticket.setId(generatedId);
             rsl = Optional.of(ticket);
         } catch (Exception e) {
-            LOG.error("Выбранное место уже занято.", e);
-            throw new Exception("Не удалось купить билет. Место уже занято.");
+            LOG.error("Не удалось купить билет. Место уже занято.", e);
         }
         return rsl;
     }

@@ -15,7 +15,6 @@ import java.util.Properties;
 
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 public class SimpleTicketServiceTest {
 
@@ -172,7 +171,7 @@ public class SimpleTicketServiceTest {
     }
 
     @Test
-    public void whenBuyThenGetSame() throws Exception {
+    public void whenBuyThenGetSame() {
         var expectedTicketDto = simpleTicketService.buy(new Ticket(
                 filmSession1.getId(), 5, 10, user1.getId()
         ));
@@ -181,7 +180,7 @@ public class SimpleTicketServiceTest {
     }
 
     @Test
-    public void whenBuySeveralThenGetAll() throws Exception {
+    public void whenBuySeveralThenGetAll() {
         var ticketDto1 = simpleTicketService.buy(new Ticket(
                 filmSession1.getId(), 5, 10, user2.getId()
         ));
@@ -205,18 +204,16 @@ public class SimpleTicketServiceTest {
     }
 
     @Test
-    public void whenTryBuyTheSameTicketThenThrowException() throws Exception {
+    public void whenTryBuyTheSameTicketThenOptionalEmpty() {
         var ticket = new Ticket(
                 filmSession1.getId(), 5, 10, user2.getId()
         );
-        var ticket1 = simpleTicketService.buy(ticket);
-        assertThatThrownBy(() -> simpleTicketService.buy(ticket))
-                .isInstanceOf(Exception.class)
-                .hasMessageContaining("Не удалось купить билет. Место уже занято.");
+        simpleTicketService.buy(ticket);
+        assertThat(simpleTicketService.buy(ticket)).isEmpty();
     }
 
     @Test
-    public void whenRefundTicketThenNothingFound() throws Exception {
+    public void whenRefundTicketThenNothingFound() {
         var ticket = simpleTicketService.buy(new Ticket(
                 filmSession1.getId(), 5, 10, user2.getId()
         ));

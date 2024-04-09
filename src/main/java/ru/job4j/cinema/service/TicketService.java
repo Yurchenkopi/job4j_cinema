@@ -9,7 +9,7 @@ import java.util.Optional;
 public interface TicketService {
 
 
-    Optional<TicketDto> buy(Ticket ticket) throws Exception;
+    Optional<TicketDto> buy(Ticket ticket);
 
     Optional<TicketDto> findById(int id);
 

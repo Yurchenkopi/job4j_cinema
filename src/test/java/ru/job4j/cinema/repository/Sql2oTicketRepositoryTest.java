@@ -14,7 +14,6 @@ import java.util.Properties;
 
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 public class Sql2oTicketRepositoryTest {
 
@@ -162,7 +161,7 @@ public class Sql2oTicketRepositoryTest {
     }
 
     @Test
-    public void whenBuyThenGetSame() throws Exception {
+    public void whenBuyThenGetSame() {
         var expectedTicket = sql2oTicketRepository.buy(new Ticket(
                 filmSession1.getId(), 5, 10, user1.getId()
         ));
@@ -171,7 +170,7 @@ public class Sql2oTicketRepositoryTest {
     }
 
     @Test
-    public void whenBuySeveralThenGetAll() throws Exception {
+    public void whenBuySeveralThenGetAll() {
         var ticket1 = sql2oTicketRepository.buy(new Ticket(
                 filmSession1.getId(), 5, 10, user2.getId()
         ));
@@ -195,17 +194,16 @@ public class Sql2oTicketRepositoryTest {
     }
 
     @Test
-    public void whenTryBuyTheSameTicketThenThrowException() throws Exception {
-        var ticket1 = sql2oTicketRepository.buy(new Ticket(
+    public void whenTryBuyTheSameTicketThenThenOptionalEmpty() {
+        var ticket = new Ticket(
                 filmSession1.getId(), 5, 10, user2.getId()
-        ));
-        assertThatThrownBy(() -> sql2oTicketRepository.buy(ticket1.get()))
-                .isInstanceOf(Exception.class)
-                .hasMessageContaining("Не удалось купить билет. Место уже занято.");
+        );
+        sql2oTicketRepository.buy(ticket);
+        assertThat(sql2oTicketRepository.buy(ticket)).isEmpty();
     }
 
     @Test
-    public void whenRefundTicketThenNothingFound() throws Exception {
+    public void whenRefundTicketThenNothingFound() {
         var ticket = sql2oTicketRepository.buy(new Ticket(
                 filmSession1.getId(), 5, 10, user2.getId()
         ));

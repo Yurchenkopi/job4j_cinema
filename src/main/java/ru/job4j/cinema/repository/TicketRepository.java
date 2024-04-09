@@ -7,7 +7,7 @@ import java.util.Optional;
 
 public interface TicketRepository {
 
-    Optional<Ticket> buy(Ticket ticket) throws Exception;
+    Optional<Ticket> buy(Ticket ticket);
 
     Ticket getById(int id);
 

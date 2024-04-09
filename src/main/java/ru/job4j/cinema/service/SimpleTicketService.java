@@ -1,7 +1,6 @@
 package ru.job4j.cinema.service;
 
 import org.springframework.stereotype.Service;
-import ru.job4j.cinema.dto.FilmDto;
 import ru.job4j.cinema.dto.TicketDto;
 import ru.job4j.cinema.model.Ticket;
 import ru.job4j.cinema.repository.FilmRepository;
@@ -36,7 +35,7 @@ public class SimpleTicketService implements TicketService {
     }
 
     @Override
-    public Optional<TicketDto> buy(Ticket ticket) throws Exception {
+    public Optional<TicketDto> buy(Ticket ticket) {
         return Optional.ofNullable(ticketToDto(ticketRepository.buy(ticket)));
     }
 

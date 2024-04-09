@@ -41,7 +41,7 @@ public class UserController {
         var newUser = userService.save(user);
         if (newUser.isEmpty()) {
             model.addAttribute("message", "Пользователь с таким email уже зарегистрирован");
-            return "errors/404";
+            return "/users/register";
         }
         return loginUser(user, model, request);
     }
